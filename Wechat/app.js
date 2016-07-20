@@ -10,7 +10,7 @@ var crypto  = require('crypto');
 var WECHATCONFIG = {
     appid : 'wx29564eaf67e22491',
     appsecret : '26d6677307ba0bf5dfa45a0b8a0f958b',
-    token : 'Pa888888'
+    token : 'Pa888888',
     wechatUrl : 'http://sz.api.weixin.qq.com'
 }
 
