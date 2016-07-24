@@ -1,0 +1,14 @@
+{
+  "name": "wechat api kata",
+  "version": "0.0.0",
+  "description": "微信API练习",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": [
+    "wechat"
+  ],
+  "author": "Jayuh",
+  "license": "MIT"
+}
