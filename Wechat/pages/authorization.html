@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>微信页面授权</title>
+</head>
+<body>
+
+    <pre>
+    第一步：用户同意授权，获取code
+        https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect
+
+    第二步：通过code换取网页授权access_token
+    第三步：刷新access_token（如果需要）
+    第四步：拉取用户信息(需scope为 snsapi_userinfo)
+    附：检验授权凭证（access_token）是否有效
+    </pre>
+
+<script src="js/jquery.min.js"></script>
+<script>
+    function getUrlParams() {
+        var arr = location.search.split('?')[1].split('&'),
+                length = arr.length,
+                result = {};
+        while (length) {
+            length--;
+            var key = arr[length].split('=');
+            result[key[0]] = key[1];
+        }
+        return result;
+    }
+
+    var urlParams = getUrlParams();
+    if (!urlParams.openid) {
+        location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx29564eaf67e22491&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect';
+    }
+</script>
+</body>
+</html>
