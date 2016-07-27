@@ -3,37 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <title>微信页面授权</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
 
-    <pre>
-    第一步：用户同意授权，获取code
-        https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect
-
-    第二步：通过code换取网页授权access_token
-    第三步：刷新access_token（如果需要）
-    第四步：拉取用户信息(需scope为 snsapi_userinfo)
-    附：检验授权凭证（access_token）是否有效
-    </pre>
+    <img src="" alt="" id="headimgurl" width="100%">
 
 <script src="js/jquery.min.js"></script>
 <script>
-    function getUrlParams() {
-        var arr = location.search.split('?')[1].split('&'),
-                length = arr.length,
-                result = {};
-        while (length) {
-            length--;
-            var key = arr[length].split('=');
-            result[key[0]] = key[1];
+    // 通用函数
+    var tools = {
+        // 获取URL中的参数
+        getUrlParams : function () {
+            if (location.search === '') return new Object;
+            var arr = location.search.split('?')[1].split('&'),
+                    length = arr.length,
+                    result = {};
+            while (length) {
+                length--;
+                var key = arr[length].split('=');
+                result[key[0]] = key[1];
+            }
+            return result;
+        },
+        // 将URL中的某些参数去掉,再返回URL
+        // params是一个数组
+        getUrlWithoutParams : function (params) {
+            var tempParams = urlParams;
+            for (var key in params) {
+                delete tempParams[params[key]];
+            }
+            var search = $.isEmptyObject(tempParams) ? '' : '?' + tools.objToString(tempParams),
+                hash = location.hash ? '#' + location.hash : '',
+                url = location.origin + location.pathname + search + hash;
+            return url;
+        },
+        // 给URL添加某些参数,再返回URL
+        // params是一个对象
+        getUrlAddParams : function (params) {
+            var search = location.search ? location.search + '&' + tools.objToString(params) : '?' + tools.objToString(params),
+                hash = location.hash ? '#' + location.hash : '',
+                url = location.origin + location.pathname + search + hash;
+            return url;
+        },
+        // 对象转字符串
+        objToString : function (obj) {
+            var str = '';
+            for (var i in obj) {
+                str += '&' + i + '=' + obj[i];
+            }
+            return str.replace('&', '');
         }
-        return result;
+    };
+
+    var urlParams = tools.getUrlParams();
+
+    // 第一次进入该页面:需要跳转至微信oauth2页面进行授权.
+    if (urlParams.code === undefined && urlParams.openid === undefined) {
+        alert('第一次进入该页面:需要跳转至微信oauth2页面进行授权.');
+        goOauth();
+    }
+    // 第二次进入该页面:已经从微信oauth2得到code; 本次目标:将code发送给后端,后端去微信拿到openid再传给前端.
+    else if (urlParams.code !== undefined && urlParams.openid === undefined) {
+        alert('第二次进入该页面:已经从微信oauth2得到code; 本次目标:将code发送给后端,后端去微信拿到openid再传给前端.');
+        $.ajax({
+            url : '/server/pageAuthorization/getOpenId',
+            type : 'GET',
+            data : {
+                code : urlParams.code
+            },
+            success : function(data) {
+                if (data.responseCode === 0) {
+                    location.href = tools.getUrlAddParams(data.data);
+                } else if (data.responseCode === 40029) {
+                    goOauth();
+                } else {
+                    alert(data.responseMsg);
+                }
+            },
+            error : function(err) {
+                console.log(err);
+            }
+        });
+    }
+    // 第三次进入该页面:已经从后端拿到openid; 本次目标:获取用户信息
+    else if (urlParams.code !== undefined && urlParams.openid !== undefined) {
+        alert('第三次进入该页面:已经从后端拿到openid; 本次目标:获取用户信息');
+        $.ajax({
+            url : '/server/pageAuthorization/getUserInfo',
+            type : 'GET',
+            data : {
+                openid : urlParams.openid
+            },
+            success : function(data) {
+                if (data.responseCode === 0) {
+                    var userInfo = data.data;
+                    $('#headimgurl').attr({
+                        'src': userInfo.headimgurl,
+                        'alt': userInfo.nickname
+                    });
+                } else {
+                    alert(data.responseMsg);
+                }
+            },
+            error : function(err) {
+                console.log(err);
+            }
+        });
     }
 
-    var urlParams = getUrlParams();
-    if (!urlParams.openid) {
-        location.href = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx29564eaf67e22491&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redirect';
+    // 跳转至微信oAuth页面
+    function goOauth() {
+        var appid = 'wx29564eaf67e22491',
+            response_type = 'code',
+            scope = 'snsapi_base',
+            state = 'STATE',
+            redirect_uri = encodeURIComponent(tools.getUrlWithoutParams(['code', 'state']));
+        location.href ='https://open.weixin.qq.com/connect/oauth2/authorize?appid=' + appid + '&redirect_uri=' + redirect_uri + '&response_type=' + response_type + '&scope=' + scope + '&state=' + state + '#wechat_redirect';
     }
+
 </script>
 </body>
 </html>

@@ -10,21 +10,27 @@ var querystring = require('querystring');
 var xml2js = require('xml2js');
 var fs = require('fs');
 
-// 测试账号信息
+// 微信账号信息
 var wechatConfig = {
     appid : 'wx29564eaf67e22491',
     appsecret : '26d6677307ba0bf5dfa45a0b8a0f958b',
     token : 'Pa888888',
     wechatUrl : 'sz.api.weixin.qq.com',
     access_token : 'sTskAZw0XYGBbISSrENlo_UvOCba69CGj2LtZAe5LhVbjadj8fwRIKXXiv1Wtv4JQ9vJ8aoCx5ARX_UnubWVubgOC5f-dLscEimDlZ8zQMdouaNnaiHlPd2bho5pFdOWBJJfACATBB'
-}
+};
+
+// 页面授权信息
+var pageAuthorizationInfo = {
+    access_token : '',
+    refresh_token : ''
+};
 
 http.createServer(function(req, res) {
     var urlParse = url.parse(req.url);
     var urlPathname = urlParse.pathname;
     var urlQuery = querystring.parse(urlParse.query);
 
-    // 后端
+    // 微信发起的请求
     if (urlPathname === '/server') {
         // 验证服务器地址的有效性
         // http://28cf2399.ngrok.natapp.cn/checkSignature?signature=f31b8b749778cffabe02e004b0a4d363db389545&timestamp=aaa&nonce=bbb&echostr=abc
@@ -73,6 +79,72 @@ http.createServer(function(req, res) {
         }
     }
 
+    // 网页授权:通过code换取网页授权access_token及openid
+    else if (urlPathname === '/server/pageAuthorization/getOpenId') {
+        var code = urlQuery.code;
+        if (code) {
+            pageAuthorization.getAccessToken(code, function(data) {
+                if (data.errcode) {
+                    var result = {
+                        'responseCode': data.errcode,
+                        'responseMsg': data.errmsg
+                    };
+                    res.writeHead('200', {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify(result));
+                } else if (data.openid) {
+                    var result = {
+                        'responseCode': 0,
+                        'data': {
+                            'openid': data.openid
+                        },
+                        'responseMsg': '成功.'
+                    };
+                    res.writeHead('200', {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify(result));
+                }
+            });
+        } else {
+            var result = {
+                'responseCode': 1,
+                'responseMsg': '入参缺少code'
+            };
+            res.writeHead('200', {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(result));
+        }
+    }
+
+    // 网页授权:通过openid获取用户基本信息
+    else if (urlPathname === '/server/pageAuthorization/getUserInfo') {
+        var openid = urlQuery.openid;
+        if (openid) {
+            pageAuthorization.getUserInfo(openid, function(data) {
+                if (data.errcode) {
+                    var result = {
+                        'responseCode': data.errcode,
+                        'responseMsg': data.errmsg
+                    };
+                    res.writeHead('200', {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify(result));
+                } else {
+                    var result = {
+                        'responseCode': 0,
+                        'data': data,
+                        'responseMsg': '成功.'
+                    };
+                    res.writeHead('200', {'Content-Type': 'application/json'});
+                    res.end(JSON.stringify(result));
+                }
+            });
+        } else {
+            var result = {
+                'responseCode': 1,
+                'responseMsg': '入参缺少openid'
+            };
+            res.writeHead('200', {'Content-Type': 'application/json'});
+            res.end(JSON.stringify(result));
+        }
+    }
+
     // 输出前端资源
     else {
         var filePath = './pages' + urlPathname;
@@ -104,7 +176,7 @@ console.log('服务器已启动，地址是：http://127.0.0.1:3000');
 
 // 获取access_token
 // https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET
-function getAAccessToken() {
+function getAccessToken() {
     var requestUrl = 'https://' + wechatConfig.wechatUrl + '/cgi-bin/token?grant_type=client_credential&appid=' + wechatConfig.appid + '&secret=' + wechatConfig.appid;
     var options = {
         host: wechatConfig.wechatUrl,
@@ -134,17 +206,41 @@ function getAAccessToken() {
         console.error(e);
     });
 }
-// getAAccessToken();
+// getAccessToken();
 
-
-
-
-
-
-
-
-
-
-
-
+// 网页授权
+var pageAuthorization = {
+    // 通过code换取网页授权access_token
+    getAccessToken: function(code, callback) {
+        var url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' + wechatConfig.appid + '&secret=' + wechatConfig.appsecret + '&code=' + code + '&grant_type=authorization_code';
+        https.get(url, function(res) {
+            var text = '';
+            res.on('data', function(d) {
+                text += d;
+            });
+            res.on('end', function() {
+                console.log('微信返回的数据结果: ' + text);
+                var data = JSON.parse(text);
+                pageAuthorizationInfo.access_token = data.access_token;
+                pageAuthorizationInfo.refresh_token = data.refresh_token;
+                // todo 7200秒后,自动刷新access_token
+                callback && callback(data);
+            });
+        });
+    },
+    getUserInfo: function(openid, callback) {
+        var url = 'https://api.weixin.qq.com/sns/userinfo?access_token=' + pageAuthorizationInfo.access_token + '&openid=' + openid + '&lang=zh_CN';
+        https.get(url, function(res) {
+            var text = '';
+            res.on('data', function(d) {
+                text += d;
+            });
+            res.on('end', function() {
+                console.log('微信返回的数据结果: ' + text);
+                var data = JSON.parse(text);
+                callback && callback(data);
+            });
+        });
+    }
+}
 
