@@ -1,0 +1,25 @@
+{
+  "name": "saytext",
+  "version": "1.0.2",
+  "description": "返回自己说的话",
+  "main": "index.js",
+  "bin": {
+    "saytext": "./bin/saytext.js"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shenxiaolong/Kata.git"
+  },
+  "keywords": [
+    "NPM"
+  ],
+  "author": "Jayuh",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shenxiaolong/Kata/issues"
+  },
+  "homepage": "https://github.com/shenxiaolong/Kata#readme"
+}
