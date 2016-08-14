@@ -2,7 +2,7 @@
 
 ### 安装
 ``` shell
-sudo npm install -g a_npm_modules
+sudo npm install -g saytext
 ```
 
 ### 使用（text为一句话，它会自动回复）

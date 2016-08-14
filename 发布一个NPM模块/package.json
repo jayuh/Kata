@@ -1,6 +1,6 @@
 {
   "name": "saytext",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "返回自己说的话",
   "main": "index.js",
   "bin": {
