@@ -1,0 +1,17 @@
+{
+  "name": "scaffold",
+  "version": "1.0.0",
+  "description": "自动生成一个模块",
+  "main": "index.js",
+  "devDependencies": {
+    "swig": "^1.4.2"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "scaffold"
+  ],
+  "author": "shenxiaolong",
+  "license": "ISC"
+}
