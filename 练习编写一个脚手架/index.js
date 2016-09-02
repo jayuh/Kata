@@ -1,45 +1,71 @@
 var readline = require('readline')
+var swig = require('swig')
+var fs = require('fs')
+
+// 修改swig差值表达式
+swig.setDefaults({
+	tagControls: ['{?', '?}']
+})
+
+// 全局配置项
+var today = new Date()
+var config = {
+	grouping: 'marketing',
+	grouping_rootpath: 'BROP-MARKTING',
+	name: 'admin',
+	name_zh: '管理员',
+	um: 'shenxiaolong029',
+	type: 1,
+	date: today.getFullYear() + '/' + today.getMonth() + '/' + today.getDate()
+}
+
+// 配置readline
 var rl = readline.createInterface({
 	input: process.stdin,
 	output: process.stdout
 })
-
-var config = {
-	grouping: '',
-	name: '',
-	name_zh: '',
-	um: '',
-	type: ''
-}
-
 rl.on('close', function() {
-	console.log('---------- 配置参数如下 ----------')
-	console.log(config)
-});
+	console.log('\n---------- 开始执行操作 ----------')
+	shell.handle()
+})
 
+// 操作步骤
 var shell = {
 
 	step1: function () {
 		var self = this
 		rl.question("请选择需要添加的分组模块（1、渠道管理；2、客户管理；3、营销管理；4、产品发布）: ",function(text){
 			var o = {
-				'1': 'channel',
-				'2': 'custom',
-				'3': 'marketing',
-				'4': 'product'
+				'1': {
+					name: 'channel',
+					rootpath: 'BROP-CHANNEL'
+				},
+				'2': {
+					name: 'custom',
+					rootpath: 'BROP-CUSTOM'
+				},
+				'3': {
+					name: 'marketing',
+					rootpath: 'BROP-MARKTING'
+				},
+				'4': {
+					name: 'product',
+					rootpath: 'BROP-PRODUCT'
+				}
 			}
 		    switch (text) {
 		        case '1':
 		        case '2':
 		        case '3':
 		        case '4':
-		            config.grouping = o[text]
+		            config.grouping = o[text].name
+		            config.grouping_rootpath = o[text].rootpath
 		            self.step2()
 		            break
 		        default :
 		            self.step1()
 		    }
-		});
+		})
 	},
 
 	step2: function () {
@@ -105,11 +131,72 @@ var shell = {
 	},
 
 	step7: function() {
-		rl.close()
+		console.log('\n---------- 配置参数如下 ----------')
+		console.log(config)
+		console.log('')
+		this.step8()
+	},
+
+	step8: function() {
+		var self = this
+		rl.question('确认写(yes)，重来写(no): ', function(text) {
+			switch (text) {
+				case 'yes':
+					rl.close()
+					break
+				case 'no':
+					self.step1()
+					break
+				default:
+					self.step8()
+			}
+		})
+	},
+
+	handle: function() {
+		switch (config.type) {
+			case 1:
+				this.copyFile('./template/1/demo.html', './' + config.grouping_rootpath + '/' + config.name + '.shtml')
+				this.copyFile('./template/1/assets/static/js/grouping/demo.js', './' + config.grouping_rootpath + '/www/assets/static/js/' + config.grouping + '/' + config.name + '.js')
+				this.copyFile('./template/1/assets/modules/grouping/viewModel/demo.js', './' + config.grouping_rootpath + '/www/assets/modules/' + config.grouping + '/viewModel/' + config.name + '.js')
+				this.copyFile('./template/1/assets/modules/grouping/model/demo-model.js', './' + config.grouping_rootpath + '/www/assets/modules/' + config.grouping + '/model/' + config.name + '-model.js')
+				break
+			case 2:
+				this.copyFile('./template/2/demo.html', './' + config.grouping_rootpath + '/' + config.name + '.shtml')
+				this.copyFile('./template/2/assets/static/js/grouping/demo.js', './' + config.grouping_rootpath + '/www/assets/static/js/' + config.grouping + '/' + config.name + '.js')
+				this.copyFile('./template/2/assets/modules/grouping/viewModel/demo.js', './' + config.grouping_rootpath + '/www/assets/modules/' + config.grouping + '/viewModel/' + config.name + '.js')
+				this.copyFile('./template/2/assets/modules/grouping/model/demo-model.js', './' + config.grouping_rootpath + '/www/assets/modules/' + config.grouping + '/model/' + config.name + '-model.js')
+				break
+			case 3:
+				this.copyFile('./template/3/demo.html', './' + config.grouping_rootpath + '/' + config.name + '.shtml')
+				this.copyFile('./template/3/assets/static/js/grouping/demo.js', './' + config.grouping_rootpath + '/www/assets/static/js/' + config.grouping + '/' + config.name + '.js')
+				this.copyFile('./template/3/assets/modules/grouping/viewModel/demo.js', './' + config.grouping_rootpath + '/www/assets/modules/' + config.grouping + '/viewModel/' + config.name + '.js')
+				this.copyFile('./template/3/assets/modules/grouping/model/demo-model.js', './' + config.grouping_rootpath + '/www/assets/modules/' + config.grouping + '/model/' + config.name + '-model.js')
+				break
+			default:
+				console.log('config.type有误，请检查！')
+		}
+	},
+
+	copyFile: function(copyPath, pastePath) {
+		fs.exists(pastePath, function(exists) {
+			if (exists) {
+				console.log("Failed to create the file because it already exists: " + pastePath)
+			} else {
+				var template = swig.compileFile(copyPath)
+				var str = template(config)
+				fs.writeFile(pastePath, str, function(err) {
+				    if (err) throw err
+				    console.log('Create File: ' + pastePath)
+				})
+			}
+		})
 	}
 }
 
 shell.step1()
+
+
 
 
 

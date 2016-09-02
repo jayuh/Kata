@@ -1,0 +1,27 @@
+{% extends 'template/layout-bcoms.html' %}
+
+{% block title %}{{ name_zh }}{% endblock title %}
+
+{% block content %}
+<section class="content-header">
+    <h1>{{ name_zh }}</h1>
+</section>
+
+<section class="content">
+    <div class="page">
+        <div class="box">
+            <div class="box-body">
+                <div class="module-panel">
+                    这是一个新建的页面，请从这里开始吧！
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock%}
+
+{% block script %}
+<script data-fixed="true" data-main="/assets/static/js/{{ grouping }}/{{ name }}.js" src="/assets/static/vendors/requirejs/require.js"></script>
+{% endblock %} 
+
