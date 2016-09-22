@@ -1,0 +1,143 @@
+body {
+	background-color: #282828;
+}
+
+/* 顶部 */
+.topbar {
+	width: 100%;
+    height: 40px;
+    background-color: #000;
+    line-height: 40px;
+    text-align: center;
+    
+}
+.topbar-btn {
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0 10px;
+	color: #999;
+	text-decoration: none;
+}
+.topbar-btn:hover {
+	color: #FFF;
+	text-decoration: none;
+}
+.topbar-btn i {
+	background-image: url(../images/icons_24_24.png);
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+	vertical-align: middle;
+}
+.btn-save i {background-position: 0 -1px;}
+.btn-save:hover i {background-position: -24px -1px;}
+.btn-preview i {background-position: 0 -48px;}
+.btn-preview:hover i {background-position: -24px -48px;}
+.btn-publish i {background-position: 0 -24px;}
+.btn-publish:hover i {background-position: -24px -24px;}
+
+/* 屏幕 */
+.screen{
+	position: fixed;
+	top: 40px;
+	left: 0;
+	background-color: #1B1B1B;
+	width: 200px;
+	height: 500px;
+}
+.btn-addscreen{
+	display: block;
+	width: 32px;
+	height: 32px;
+	margin: -36px auto 0;
+	position: relative;
+	left: 5px;
+	text-indent: -9999px;
+	background: url(../images/icons_32_32.png) 0 -32px;
+}
+.screen-list li{
+	width: 100%;
+}
+.screen-list .index{
+	float: left;
+	width: 20px;
+	line-height: 220px;
+	color: #999;
+	font-size: 16px;
+	font-weight: bold;
+	text-align: center;
+}
+.screen-list .thumbnail{
+	margin: 20px 20px 20px 30px;
+	background-color: #999;
+	height: 220px;
+}
+
+/* 画布 */
+.canvas{
+	width: 320px;
+	height: 500px;
+	background-color: #FFF;
+	margin: 10px auto 0;
+}
+
+
+/* 工具栏 */
+.toolbar{
+	position: fixed;
+	top: 40px;
+	right: 0;
+	background-color: #1B1B1B;
+	width: 50px;
+	height: 500px;
+}
+.toolbar-elem{
+	width: 42px;
+	height: 42px;
+	font-size: 14px;
+	color: #999;
+	padding: 4px;
+	cursor: pointer;
+}
+.toolbar-elem:hover{
+	color: #FFF;
+}
+.toolbar-elem span{
+	float: left;
+	width: 14px;
+}
+.toolbar-elem i{
+	float: right;
+	margin-top: 8px;
+	background-image: url(../images/icons_24_24.png);
+	width: 24px;
+	height: 24px;
+	display: inline-block;
+}
+.tool-text i {background-position: 0 -264px;}
+.tool-text:hover i {background-position: -24px -264px;}
+.tool-pic i {background-position: 0 -288px;}
+.tool-pic:hover i {background-position: -24px -288px;}
+.tool-shape i {background-position: 0 -1584px;}
+.tool-shape:hover i {background-position: -24px -1584px;}
+.tool-button i {background-position: 0 -312px;}
+.tool-button:hover i {background-position: -24px -312px;}
+.tool-form i {background-position: 0 -336px;}
+.tool-form:hover i {background-position: -24px -336px;}
+.tool-interaction i {background-position: 0 -360px;}
+.tool-interaction:hover i {background-position: -24px -360px;}
+.tool-music i {background-position: 0 -384px;}
+.tool-music:hover i {background-position: -24px -384px;}
+.tool-expand i {background-position: 0 -408px;}
+.tool-expand:hover i {background-position: -24px -408px;}
+
+
+
+
+
+
+
+
+
+
+
