@@ -1,0 +1,34 @@
+extends layout
+
+block title
+  title 萤火虫
+
+block content
+  h3 切换项目：  
+  nav
+    a 项目1
+    a 项目2
+  label(for="addProject") 添加一个项目: 
+  input(type="text" placeholder="请填写项目名称" id="addProject")
+  a(@click:addProject) 添加
+  hr
+  h3 添加一条 Mock 数据：
+  ul
+    li
+      label(for="addUrl") url: /api/
+      input#addUrl(type="text" style="border:0;border-bottom: 1px solid #555;" v-model="url")
+    li
+      label(for="addContent") Mock数据:
+      textarea#addContent(name="", cols="30", rows="10" v-model="content")
+    li
+      a(href="javascript:void(0)" @click="submitMock") 提交
+  hr
+  h3 已存Mock数据：
+  ul
+    li(v-for="item in mockList")
+      a(href="/api/{{item}}") /api/{{item}}
+      a(href="javascript:void(0)" @click="modifyMock(item)" style="margin-left:20px") 修改
+      a(href="javascript:void(0)" @click="deleteMock(item)" style="margin-left:20px") 删除
+
+block scripts
+  script(src='/javascripts/index.js')
