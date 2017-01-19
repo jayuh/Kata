@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>判断版本号</title>
+	<style>
+		#result{
+			border: 1px red dotted;
+		    padding: 10px;
+		    margin: 10px 0 0;
+		}
+	</style>
+</head>
+<body>
+	
+	<label for="currentVersion">当前版本：</label>
+	<input type="text" value='2.7.1' id="currentVersion">
+	<label for="targetVersion">目标版本：</label>
+	<input type="text" value='2.7.3' id="targetVersion">
+	<input type="submit" value="计算" id="submit">
+	<div id="result"></div>
+
+	<script>
+		function judgeVersion (currentVersion, targetVersion) {
+			var currentArr = currentVersion.split('.')
+			var targetArr = targetVersion.split('.')
+			var length = currentArr.length > targetArr.length ? currentArr.length : targetArr.length
+			for (var i = 0; i <= length; i++) {
+				if (targetArr[i] > currentArr[i]) {
+					return '>'
+				} else if (targetArr[i] < currentArr[i]) {
+					return '<'
+				}
+			}
+			return '='
+		}
+
+		document.querySelector('#submit').onclick = function() {
+			var currentVersion = document.querySelector('#currentVersion').value
+			var targetVersion = document.querySelector('#targetVersion').value
+			var result = judgeVersion(currentVersion, targetVersion)
+			document.querySelector('#result').innerHTML = result
+		}
+		document.querySelector('#submit').onclick()
+	</script>
+</body>
+</html>
